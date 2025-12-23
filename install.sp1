@@ -1,0 +1,23 @@
+# Install AutoHotkey silently
+winget install AutoHotkey.AutoHotkey `
+  --silent `
+  --accept-package-agreements `
+  --accept-source-agreements
+
+$startup = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
+$ahkFile = Join-Path $startup "mouse_prank.ahk"
+
+@'
+#Requires AutoHotkey v2.0
+#NoTrayIcon
+
+~LButton::DllCall("user32.dll\SwapMouseButton", "Int", 1)
+~RButton::DllCall("user32.dll\SwapMouseButton", "Int", 0)
+
+Esc::{
+    DllCall("user32.dll\SwapMouseButton", "Int", 0)
+    ExitApp()
+}
+'@ | Set-Content -Path $ahkFile -Encoding UTF8
+
+Start-Process $ahkFile
