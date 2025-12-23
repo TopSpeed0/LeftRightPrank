@@ -1,0 +1,1 @@
+Add-Type -MemberDefinition '[DllImport("user32.dll")] public static extern bool SwapMouseButton(bool fSwap);' -Name "Win32Swap" -Namespace "Win32"; [Win32.Win32Swap]::SwapMouseButton($false)
