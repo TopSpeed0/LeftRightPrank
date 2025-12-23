@@ -1,17 +1,33 @@
-# Install AutoHotkey silently
+# Install AutoHotkey runtime
 winget install AutoHotkey.AutoHotkey `
   --silent `
   --accept-package-agreements `
   --accept-source-agreements
 
+# Install AutoHotkey compiler
+winget install AutoHotkey.Compiler `
+  --silent `
+  --accept-package-agreements `
+  --accept-source-agreements
+
+$compiler = "C:\Program Files\AutoHotkey\Compiler\Ahk2Exe.exe"
+
+# Wait for compiler
+$timeout = 30
+while (-not (Test-Path $compiler) -and $timeout -gt 0) {
+    Start-Sleep 1
+    $timeout--
+}
+
+if (-not (Test-Path $compiler)) {
+    Write-Error "Ahk2Exe still not found"
+    exit 1
+}
+
 $startup = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
+$ahk = Join-Path $startup "mouse_prank.ahk"
+$exe = Join-Path $startup "mspaint.exe"
 
-$ahkPath = Join-Path $startup "mouse_prank.ahk"
-$exePath = Join-Path $startup "mspaint.exe"
-
-$compiler = "C:\Program Files\AutoHotkey\AutoHotkey.exe"
-
-# Create the AHK file
 @'
 #Requires AutoHotkey v2.0
 #NoTrayIcon
@@ -23,15 +39,13 @@ Esc::{
     DllCall("user32.dll\SwapMouseButton", "Int", 0)
     ExitApp()
 }
-'@ | Set-Content -Path $ahkPath -Encoding UTF8
+'@ | Set-Content $ahk -Encoding UTF8
 
-# Compile to EXE
-& "$compiler" `
-  /in "$ahkPath" `
-  /out "$exePath"
+# Compile → EXE
+& "$compiler" /in "$ahk" /out "$exe"
 
-# Remove source AHK
-Remove-Item $ahkPath -Force
+# Cleanup
+Remove-Item $ahk -Force
 
-# Launch compiled prank
-Start-Process $exePath
+# Run
+Start-Process $exe
