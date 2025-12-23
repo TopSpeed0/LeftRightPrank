@@ -9,7 +9,7 @@ $startup = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
 $ahkPath = Join-Path $startup "mouse_prank.ahk"
 $exePath = Join-Path $startup "mspaint.exe"
 
-$compiler = "C:\Program Files\AutoHotkey\Compiler\Ahk2Exe.exe"
+$compiler = "C:\Program Files\AutoHotkey\AutoHotkey.exe"
 
 # Create the AHK file
 @'
